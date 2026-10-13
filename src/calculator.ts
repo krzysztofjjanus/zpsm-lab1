@@ -1,4 +1,6 @@
-// src/clalculator.ts
+// src/calculator.ts
+import filter from "lodash/filter.js";
+import reduce from "lodash/reduce.js";
 
 function isUsableNumber(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value);
@@ -9,8 +11,8 @@ export class Calculator {
   private readonly rejected: unknown[];
 
   constructor(input: unknown[]) {
-    this.values = input.filter(isUsableNumber);
-    this.rejected = input.filter((v) => !isUsableNumber(v));
+    this.values = filter(input, isUsableNumber);
+    this.rejected = filter(input, (v) => !isUsableNumber(v));
 
     if (this.rejected.length > 0) {
       console.log(
@@ -21,17 +23,17 @@ export class Calculator {
   }
 
   add(): number {
-    return this.values.reduce((acc, v) => acc + v, 0);
+    return reduce(this.values, (acc, v) => acc + v, 0);
   }
 
   subtract(): number {
     const first = this.values[0];
     if (first === undefined) return 0;
-    return this.values.slice(1).reduce((acc, v) => acc - v, first);
-    }
+    return reduce(this.values.slice(1), (acc, v) => acc - v, first);
+  }
 
   multiply(): number {
-    return this.values.reduce((acc, v) => acc * v, 1);
+    return reduce(this.values, (acc, v) => acc * v, 1);
   }
 
   divide(): number {
@@ -39,8 +41,8 @@ export class Calculator {
     if (first === undefined) return 0;
     const rest = this.values.slice(1);
     if (rest.includes(0)) {
-        throw new Error("Cannot divide by zero");
+      throw new Error("Cannot divide by zero");
     }
-    return rest.reduce((acc, v) => acc / v, first);
-    }
+    return reduce(rest, (acc, v) => acc / v, first);
+  }
 }
